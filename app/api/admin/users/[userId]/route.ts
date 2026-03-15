@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import mongoose from 'mongoose';
@@ -52,7 +52,7 @@ export async function PATCH(
       console.log('Suspending user...');
       
       // Use native MongoDB update for reliability
-      const updateResult = await mongoose.connection.db.collection('users').updateOne(
+      const updateResult = await mongoose.connection.db!.collection('users').updateOne(
         { _id: new mongoose.Types.ObjectId(userId) },
         {
           $set: {
@@ -93,7 +93,7 @@ export async function PATCH(
       console.log('Unsuspending user...');
       
       // Use native MongoDB update and reset message count
-      const updateResult = await mongoose.connection.db.collection('users').updateOne(
+      const updateResult = await mongoose.connection.db!.collection('users').updateOne(
         { _id: new mongoose.Types.ObjectId(userId) },
         {
           $set: {
@@ -125,7 +125,7 @@ export async function PATCH(
         },
       });
     } else if (action === 'makeAdmin') {
-      await mongoose.connection.db.collection('users').updateOne(
+      await mongoose.connection.db!.collection('users').updateOne(
         { _id: new mongoose.Types.ObjectId(userId) },
         { $set: { isAdmin: true } }
       );
@@ -138,7 +138,7 @@ export async function PATCH(
         user: updatedUser,
       });
     } else if (action === 'removeAdmin') {
-      await mongoose.connection.db.collection('users').updateOne(
+      await mongoose.connection.db!.collection('users').updateOne(
         { _id: new mongoose.Types.ObjectId(userId) },
         { $set: { isAdmin: false } }
       );
